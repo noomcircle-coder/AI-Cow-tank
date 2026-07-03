@@ -5,12 +5,13 @@
 <title>Cow Farm System</title>
 <style>
 body{font-family:Arial;background:#f4f6f8;padding:20px}
-.tank{background:white;padding:15px;border-radius:10px;margin-bottom:20px}
-.rack{background:#f9f9f9;padding:10px;margin:10px 0;border-radius:8px}
-.bull{margin:5px 0;padding:8px;background:#fff;border-radius:6px}
+.box{background:white;padding:12px;margin-bottom:15px;border-radius:10px}
+.rack{background:#f1f1f1;padding:10px;margin:10px 0;border-radius:8px}
+.bull{margin:5px 0;padding:6px;background:#fff;border-radius:6px}
 button{padding:5px 8px;margin:2px;border:none;border-radius:5px;color:white}
 .plus{background:#2d7ff9}
 .minus{background:#e74c3c}
+.add{background:#27ae60}
 .low{color:red;font-weight:bold}
 </style>
 </head>
@@ -19,6 +20,8 @@ button{padding:5px 8px;margin:2px;border:none;border-radius:5px;color:white}
 
 <h2>🐂 Cow Farm System</h2>
 
+<button class="add" onclick="addTank()">+ เพิ่มถัง</button>
+
 <div id="app"></div>
 
 <script>
@@ -26,23 +29,7 @@ button{padding:5px 8px;margin:2px;border:none;border-radius:5px;color:white}
 let data = JSON.parse(localStorage.getItem("cowfarm") || "null");
 
 if(!data){
-  data = {
-    tanks:[
-      {
-        name:"Tank 1",
-        racks:[
-          {
-            name:"Rack 1",
-            bulls:[
-              {name:"Bull A", color:"🔴", qty:5},
-              {name:"Bull B", color:"🔵", qty:2},
-              {name:"Bull C", color:"🟢", qty:10}
-            ]
-          }
-        ]
-      }
-    ]
-  };
+  data = { tanks: [] };
 }
 
 function save(){
@@ -53,18 +40,23 @@ function render(){
   let html = "";
 
   data.tanks.forEach((t,ti)=>{
-    html += `<div class="tank"><h3>${t.name}</h3>`;
+    html += `<div class="box">
+      <h3>${t.name}</h3>
+      <button onclick="addRack(${ti})">+ เพิ่มแล็ค</button>
+    `;
 
     t.racks.forEach((r,ri)=>{
-      html += `<div class="rack"><b>${r.name}</b>`;
+      html += `<div class="rack">
+        <b>${r.name}</b>
+        <button onclick="addBull(${ti},${ri})">+ เพิ่มพ่อพันธุ์</button>
+      `;
 
       r.bulls.forEach((b,bi)=>{
-
         let warn = b.qty < 3 ? "low" : "";
 
         html += `
         <div class="bull">
-          ${b.color} ${b.name} 
+          ${b.name} 
           <span class="${warn}">(${b.qty})</span>
 
           <button class="plus" onclick="change(${ti},${ri},${bi},1)">+</button>
@@ -83,6 +75,41 @@ function render(){
   save();
 }
 
+// เพิ่มถัง
+function addTank(){
+  let name = prompt("ชื่อถัง:");
+  if(!name) return;
+
+  data.tanks.push({name:name, racks:[]});
+  render();
+}
+
+// เพิ่มแล็ค
+function addRack(ti){
+  let name = prompt("ชื่อแล็ค:");
+  if(!name) return;
+
+  data.tanks[ti].racks.push({name:name, bulls:[]});
+  render();
+}
+
+// เพิ่มพ่อพันธุ์ (สำคัญที่สุด)
+function addBull(ti,ri){
+  let name = prompt("ชื่อพ่อพันธุ์:");
+  if(!name) return;
+
+  let qty = prompt("จำนวนหลอด:");
+  qty = parseInt(qty || 0);
+
+  data.tanks[ti].racks[ri].bulls.push({
+    name:name,
+    qty:qty
+  });
+
+  render();
+}
+
+// เพิ่ม/ลดหลอด
 function change(ti,ri,bi,val){
   let b = data.tanks[ti].racks[ri].bulls[bi];
   b.qty += val;
