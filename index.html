@@ -2,67 +2,91 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Cow Tank Pro</title>
+<title>Cow Farm System</title>
 <style>
-body{font-family:Arial;padding:20px;background:#f4f6f8}
-.card{background:white;padding:15px;margin-bottom:15px;border-radius:10px}
-button{padding:6px 10px;margin:3px;border:none;border-radius:6px;color:white}
+body{font-family:Arial;background:#f4f6f8;padding:20px}
+.tank{background:white;padding:15px;border-radius:10px;margin-bottom:20px}
+.rack{background:#f9f9f9;padding:10px;margin:10px 0;border-radius:8px}
+.bull{margin:5px 0;padding:8px;background:#fff;border-radius:6px}
+button{padding:5px 8px;margin:2px;border:none;border-radius:5px;color:white}
 .plus{background:#2d7ff9}
 .minus{background:#e74c3c}
-input{padding:5px;margin:3px}
+.low{color:red;font-weight:bold}
 </style>
 </head>
 
 <body>
 
-<h2>🐂 Cow Tank Pro</h2>
-
-<button onclick="addTank()">+ เพิ่มถัง</button>
+<h2>🐂 Cow Farm System</h2>
 
 <div id="app"></div>
 
 <script>
 
-let data = JSON.parse(localStorage.getItem("cowpro") || "[]");
+let data = JSON.parse(localStorage.getItem("cowfarm") || "null");
+
+if(!data){
+  data = {
+    tanks:[
+      {
+        name:"Tank 1",
+        racks:[
+          {
+            name:"Rack 1",
+            bulls:[
+              {name:"Bull A", color:"🔴", qty:5},
+              {name:"Bull B", color:"🔵", qty:2},
+              {name:"Bull C", color:"🟢", qty:10}
+            ]
+          }
+        ]
+      }
+    ]
+  };
+}
+
+function save(){
+  localStorage.setItem("cowfarm", JSON.stringify(data));
+}
 
 function render(){
   let html = "";
 
-  data.forEach((t,i)=>{
-    html += `
-    <div class="card">
-      <input value="${t.name}" oninput="updateName(${i},this.value)" placeholder="ชื่อพ่อพันธุ์">
+  data.tanks.forEach((t,ti)=>{
+    html += `<div class="tank"><h3>${t.name}</h3>`;
 
-      <p>หลอด: ${t.qty}</p>
+    t.racks.forEach((r,ri)=>{
+      html += `<div class="rack"><b>${r.name}</b>`;
 
-      <button class="plus" onclick="change(${i},1)">+</button>
-      <button class="minus" onclick="change(${i},-1)">-</button>
-      <button onclick="removeTank(${i})">ลบ</button>
-    </div>`;
+      r.bulls.forEach((b,bi)=>{
+
+        let warn = b.qty < 3 ? "low" : "";
+
+        html += `
+        <div class="bull">
+          ${b.color} ${b.name} 
+          <span class="${warn}">(${b.qty})</span>
+
+          <button class="plus" onclick="change(${ti},${ri},${bi},1)">+</button>
+          <button class="minus" onclick="change(${ti},${ri},${bi},-1)">-</button>
+        </div>
+        `;
+      });
+
+      html += `</div>`;
+    });
+
+    html += `</div>`;
   });
 
   document.getElementById("app").innerHTML = html;
-  localStorage.setItem("cowpro", JSON.stringify(data));
+  save();
 }
 
-function addTank(){
-  data.push({name:"",qty:0});
-  render();
-}
-
-function change(i,v){
-  data[i].qty += v;
-  if(data[i].qty < 0) data[i].qty = 0;
-  render();
-}
-
-function updateName(i,val){
-  data[i].name = val;
-  render();
-}
-
-function removeTank(i){
-  data.splice(i,1);
+function change(ti,ri,bi,val){
+  let b = data.tanks[ti].racks[ri].bulls[bi];
+  b.qty += val;
+  if(b.qty < 0) b.qty = 0;
   render();
 }
 
