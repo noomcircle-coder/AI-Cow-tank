@@ -2,111 +2,148 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Cow Tank</title>
+  <title>Cow Tank System</title>
   <style>
-    body {
+    body{
       font-family: Arial;
-      padding: 20px;
-      background: #f4f6f8;
+      background:#f4f6f8;
+      padding:20px;
     }
-
-    .tank {
-      background: white;
-      padding: 15px;
-      border-radius: 12px;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    .tank{
+      background:white;
+      padding:15px;
+      border-radius:12px;
+      margin-bottom:15px;
+      box-shadow:0 2px 6px rgba(0,0,0,0.1);
     }
-
-    .row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 10px 0;
+    .row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin:10px 0;
     }
-
-    button {
-      padding: 6px 12px;
-      margin: 2px;
-      border: none;
-      border-radius: 6px;
-      color: white;
-      font-size: 16px;
+    button{
+      padding:6px 10px;
+      margin:2px;
+      border:none;
+      border-radius:6px;
+      color:white;
     }
-
-    .plus {
-      background: #2d7ff9;
+    .plus{background:#2d7ff9;}
+    .minus{background:#e74c3c;}
+    input{
+      padding:5px;
+      border-radius:6px;
+      border:1px solid #ccc;
+      width:140px;
     }
-
-    .minus {
-      background: #e74c3c;
-    }
-
-    h2 {
-      margin-bottom: 20px;
-    }
+    h2{margin-bottom:10px;}
   </style>
 </head>
 
 <body>
 
-<h2>🐂 Cow Tank System</h2>
+<h2>🐂 Cow Tank System (Real Use)</h2>
 
 <div class="tank">
-  <h3>LN2-01</h3>
+  <h3>📦 LN2-01</h3>
+
+  <div class="row">
+    <input id="name1" placeholder="พ่อพันธุ์" />
+  </div>
 
   <div class="row">
     <div>
-      A - Delta Lambda 🔴 <br>
-      <span id="a">18</span> หลอด
+      หลอดน้ำเชื้อ: <span id="a">18</span>
     </div>
     <div>
       <button class="plus" onclick="add('a')">+</button>
       <button class="minus" onclick="minus('a')">-</button>
     </div>
   </div>
+</div>
 
-  <hr>
+<div class="tank">
+  <h3>📦 LN2-02</h3>
+
+  <div class="row">
+    <input id="name2" placeholder="พ่อพันธุ์" />
+  </div>
 
   <div class="row">
     <div>
-      B - Chief 🔵 <br>
-      <span id="b">12</span> หลอด
+      หลอดน้ำเชื้อ: <span id="b">12</span>
     </div>
     <div>
       <button class="plus" onclick="add('b')">+</button>
       <button class="minus" onclick="minus('b')">-</button>
     </div>
   </div>
+</div>
 
-  <hr>
+<div class="tank">
+  <h3>📦 LN2-03</h3>
+
+  <div class="row">
+    <input id="name3" placeholder="พ่อพันธุ์" />
+  </div>
 
   <div class="row">
     <div>
-      C - Dropbox 🟢 <br>
-      <span id="c">6</span> หลอด
+      หลอดน้ำเชื้อ: <span id="c">6</span>
     </div>
     <div>
       <button class="plus" onclick="add('c')">+</button>
       <button class="minus" onclick="minus('c')">-</button>
     </div>
   </div>
-
 </div>
 
 <script>
-function add(id) {
-  let el = document.getElementById(id);
-  el.innerText = parseInt(el.innerText) + 1;
+function add(id){
+  let el=document.getElementById(id);
+  let val=parseInt(el.innerText);
+  el.innerText=val+1;
+  save();
 }
 
-function minus(id) {
-  let el = document.getElementById(id);
-  let val = parseInt(el.innerText);
-  if (val > 0) {
-    el.innerText = val - 1;
+function minus(id){
+  let el=document.getElementById(id);
+  let val=parseInt(el.innerText);
+  if(val>0){
+    el.innerText=val-1;
+    save();
   }
 }
+
+// บันทึกข้อมูล
+function save(){
+  let data={
+    a:document.getElementById("a").innerText,
+    b:document.getElementById("b").innerText,
+    c:document.getElementById("c").innerText,
+    n1:document.getElementById("name1").value,
+    n2:document.getElementById("name2").value,
+    n3:document.getElementById("name3").value,
+  };
+  localStorage.setItem("cowtank", JSON.stringify(data));
+}
+
+// โหลดข้อมูล
+function load(){
+  let data=JSON.parse(localStorage.getItem("cowtank"));
+  if(!data) return;
+
+  document.getElementById("a").innerText=data.a;
+  document.getElementById("b").innerText=data.b;
+  document.getElementById("c").innerText=data.c;
+
+  document.getElementById("name1").value=data.n1;
+  document.getElementById("name2").value=data.n2;
+  document.getElementById("name3").value=data.n3;
+}
+
+load();
 </script>
 
 </body>
