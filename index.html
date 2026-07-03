@@ -9,6 +9,7 @@
       padding: 20px;
       background: #f4f6f8;
     }
+
     .tank {
       background: white;
       padding: 15px;
@@ -16,25 +17,33 @@
       margin-bottom: 15px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
+
     .row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin: 6px 0;
+      margin: 10px 0;
     }
+
     button {
-      padding: 5px 10px;
-      margin: 0 3px;
+      padding: 6px 12px;
+      margin: 2px;
       border: none;
       border-radius: 6px;
-      background: #2d7ff9;
       color: white;
+      font-size: 16px;
     }
-    button:active {
-      transform: scale(0.95);
+
+    .plus {
+      background: #2d7ff9;
     }
+
     .minus {
       background: #e74c3c;
+    }
+
+    h2 {
+      margin-bottom: 20px;
     }
   </style>
 </head>
@@ -52,7 +61,7 @@
       <span id="a">18</span> หลอด
     </div>
     <div>
-      <button onclick="add('a')">+</button>
+      <button class="plus" onclick="add('a')">+</button>
       <button class="minus" onclick="minus('a')">-</button>
     </div>
   </div>
@@ -65,7 +74,7 @@
       <span id="b">12</span> หลอด
     </div>
     <div>
-      <button onclick="add('b')">+</button>
+      <button class="plus" onclick="add('b')">+</button>
       <button class="minus" onclick="minus('b')">-</button>
     </div>
   </div>
@@ -78,7 +87,7 @@
       <span id="c">6</span> หลอด
     </div>
     <div>
-      <button onclick="add('c')">+</button>
+      <button class="plus" onclick="add('c')">+</button>
       <button class="minus" onclick="minus('c')">-</button>
     </div>
   </div>
@@ -93,9 +102,9 @@ function add(id) {
 
 function minus(id) {
   let el = document.getElementById(id);
-  let value = parseInt(el.innerText);
-  if (value > 0) {
-    el.innerText = value - 1;
+  let val = parseInt(el.innerText);
+  if (val > 0) {
+    el.innerText = val - 1;
   }
 }
 </script>
