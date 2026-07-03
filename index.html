@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Cow Farm System</title>
+<title>Cow Farm Pro</title>
 
 <style>
 body{font-family:Arial;background:#f4f6f8;padding:20px}
@@ -15,17 +15,24 @@ button{padding:5px 8px;margin:2px;border:none;border-radius:5px;color:white;curs
 .add{background:#27ae60}
 .del{background:#555}
 .low{color:red;font-weight:bold}
-input{padding:5px;margin:3px}
+input{padding:6px;margin:5px;width:200px}
+.topbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.summary{background:#fff;padding:10px;border-radius:10px;margin-bottom:10px}
 </style>
 
 </head>
 
 <body>
 
-<h2>🐂 Cow Farm System</h2>
+<h2>🐂 Cow Farm Pro</h2>
 
+<div class="topbar">
 <button class="add" onclick="addTank()">+ เพิ่มถัง</button>
+<button onclick="downloadData()">⬇ Backup</button>
+<input placeholder="🔍 ค้นหาพ่อพันธุ์" oninput="search(this.value)">
+</div>
 
+<div id="summary" class="summary"></div>
 <div id="app"></div>
 
 <script>
@@ -41,28 +48,38 @@ function save(){
 }
 
 function render(){
+
   let html = "";
+  let total = 0;
 
   data.tanks.forEach((t,ti)=>{
-    html += `
-    <div class="box">
-      <h3>${t.name}</h3>
+
+    html += `<div class="box">
+      <h3>
+        ${t.name}
+        <button class="del" onclick="deleteTank(${ti})">ลบถัง</button>
+      </h3>
+
       <button onclick="addRack(${ti})">+ เพิ่มแล็ค</button>
     `;
 
     t.racks.forEach((r,ri)=>{
-      html += `
-      <div class="rack">
+
+      html += `<div class="rack">
         <b>${r.name}</b>
+        <button class="del" onclick="deleteRack(${ti},${ri})">ลบแล็ค</button>
         <button onclick="addBull(${ti},${ri})">+ เพิ่มพ่อพันธุ์</button>
       `;
 
       r.bulls.forEach((b,bi)=>{
+
+        total += b.qty;
+
         let warn = b.qty < 3 ? "low" : "";
 
         html += `
         <div class="bull">
-          ${b.name} 
+          ${b.name}
           <span class="${warn}">(${b.qty})</span>
 
           <button class="plus" onclick="change(${ti},${ri},${bi},1)">+</button>
@@ -79,6 +96,10 @@ function render(){
   });
 
   document.getElementById("app").innerHTML = html;
+
+  document.getElementById("summary").innerHTML =
+    `📊 ยอดรวมทั้งฟาร์ม: <b>${total}</b> หลอด`;
+
   save();
 }
 
@@ -86,8 +107,14 @@ function render(){
 function addTank(){
   let name = prompt("ชื่อถัง:");
   if(!name) return;
+  data.tanks.push({name:name,racks:[]});
+  render();
+}
 
-  data.tanks.push({name:name, racks:[]});
+// ❌ ลบถัง
+function deleteTank(ti){
+  if(!confirm("ลบถังนี้?")) return;
+  data.tanks.splice(ti,1);
   render();
 }
 
@@ -95,8 +122,14 @@ function addTank(){
 function addRack(ti){
   let name = prompt("ชื่อแล็ค:");
   if(!name) return;
+  data.tanks[ti].racks.push({name:name,bulls:[]});
+  render();
+}
 
-  data.tanks[ti].racks.push({name:name, bulls:[]});
+// ❌ ลบแล็ค
+function deleteRack(ti,ri){
+  if(!confirm("ลบแล็คนี้?")) return;
+  data.tanks[ti].racks.splice(ri,1);
   render();
 }
 
@@ -104,19 +137,13 @@ function addRack(ti){
 function addBull(ti,ri){
   let name = prompt("ชื่อพ่อพันธุ์:");
   if(!name) return;
+  let qty = parseInt(prompt("จำนวนหลอด:")||0);
 
-  let qty = prompt("จำนวนหลอด:");
-  qty = parseInt(qty || 0);
-
-  data.tanks[ti].racks[ri].bulls.push({
-    name:name,
-    qty:qty
-  });
-
+  data.tanks[ti].racks[ri].bulls.push({name:name,qty:qty});
   render();
 }
 
-// เพิ่ม / ลดหลอด
+// เพิ่ม/ลด
 function change(ti,ri,bi,val){
   let b = data.tanks[ti].racks[ri].bulls[bi];
   b.qty += val;
@@ -128,6 +155,67 @@ function change(ti,ri,bi,val){
 function deleteBull(ti,ri,bi){
   data.tanks[ti].racks[ri].bulls.splice(bi,1);
   render();
+}
+
+// ค้นหา
+function search(text){
+  text = text.toLowerCase();
+
+  let filtered = JSON.parse(JSON.stringify(data));
+
+  filtered.tanks.forEach(t=>{
+    t.racks.forEach(r=>{
+      r.bulls = r.bulls.filter(b =>
+        b.name.toLowerCase().includes(text)
+      );
+    });
+  });
+
+  renderFiltered(filtered);
+}
+
+function renderFiltered(f){
+
+  let html = "";
+  let total = 0;
+
+  f.tanks.forEach(t=>{
+    html += `<div class="box"><h3>${t.name}</h3>`;
+
+    t.racks.forEach(r=>{
+      html += `<div class="rack"><b>${r.name}</b>`;
+
+      r.bulls.forEach(b=>{
+        total += b.qty;
+        let warn = b.qty < 3 ? "low" : "";
+
+        html += `
+        <div class="bull">
+          ${b.name}
+          <span class="${warn}">(${b.qty})</span>
+        </div>`;
+      });
+
+      html += `</div>`;
+    });
+
+    html += `</div>`;
+  });
+
+  document.getElementById("app").innerHTML = html;
+  document.getElementById("summary").innerHTML =
+    `🔍 ผลค้นหา | รวม: <b>${total}</b> หลอด`;
+}
+
+// backup
+function downloadData(){
+  let blob = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  let url = URL.createObjectURL(blob);
+
+  let a = document.createElement("a");
+  a.href = url;
+  a.download = "cowfarm_backup.json";
+  a.click();
 }
 
 render();
