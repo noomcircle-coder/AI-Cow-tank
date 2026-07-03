@@ -3,28 +3,102 @@
 <head>
   <meta charset="UTF-8">
   <title>Cow Tank</title>
+  <style>
+    body {
+      font-family: Arial;
+      padding: 20px;
+      background: #f4f6f8;
+    }
+    .tank {
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 6px 0;
+    }
+    button {
+      padding: 5px 10px;
+      margin: 0 3px;
+      border: none;
+      border-radius: 6px;
+      background: #2d7ff9;
+      color: white;
+    }
+    button:active {
+      transform: scale(0.95);
+    }
+    .minus {
+      background: #e74c3c;
+    }
+  </style>
 </head>
-<body style="font-family: Arial; padding:20px;">
 
-<h2>🐂 Cow Tank - LN2-01</h2>
+<body>
 
-<hr>
+<h2>🐂 Cow Tank System</h2>
 
-<h3>A</h3>
-<p>Delta Lambda 🔴</p>
-<p>18 หลอด</p>
+<div class="tank">
+  <h3>LN2-01</h3>
 
-<hr>
+  <div class="row">
+    <div>
+      A - Delta Lambda 🔴 <br>
+      <span id="a">18</span> หลอด
+    </div>
+    <div>
+      <button onclick="add('a')">+</button>
+      <button class="minus" onclick="minus('a')">-</button>
+    </div>
+  </div>
 
-<h3>B</h3>
-<p>Chief 🔵</p>
-<p>12 หลอด</p>
+  <hr>
 
-<hr>
+  <div class="row">
+    <div>
+      B - Chief 🔵 <br>
+      <span id="b">12</span> หลอด
+    </div>
+    <div>
+      <button onclick="add('b')">+</button>
+      <button class="minus" onclick="minus('b')">-</button>
+    </div>
+  </div>
 
-<h3>C</h3>
-<p>Dropbox 🟢</p>
-<p>6 หลอด</p>
+  <hr>
+
+  <div class="row">
+    <div>
+      C - Dropbox 🟢 <br>
+      <span id="c">6</span> หลอด
+    </div>
+    <div>
+      <button onclick="add('c')">+</button>
+      <button class="minus" onclick="minus('c')">-</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function add(id) {
+  let el = document.getElementById(id);
+  el.innerText = parseInt(el.innerText) + 1;
+}
+
+function minus(id) {
+  let el = document.getElementById(id);
+  let value = parseInt(el.innerText);
+  if (value > 0) {
+    el.innerText = value - 1;
+  }
+}
+</script>
 
 </body>
 </html>
