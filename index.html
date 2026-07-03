@@ -3,17 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <title>Cow Farm System</title>
+
 <style>
 body{font-family:Arial;background:#f4f6f8;padding:20px}
 .box{background:white;padding:12px;margin-bottom:15px;border-radius:10px}
 .rack{background:#f1f1f1;padding:10px;margin:10px 0;border-radius:8px}
 .bull{margin:5px 0;padding:6px;background:#fff;border-radius:6px}
-button{padding:5px 8px;margin:2px;border:none;border-radius:5px;color:white}
+button{padding:5px 8px;margin:2px;border:none;border-radius:5px;color:white;cursor:pointer}
 .plus{background:#2d7ff9}
 .minus{background:#e74c3c}
 .add{background:#27ae60}
+.del{background:#555}
 .low{color:red;font-weight:bold}
+input{padding:5px;margin:3px}
 </style>
+
 </head>
 
 <body>
@@ -40,13 +44,15 @@ function render(){
   let html = "";
 
   data.tanks.forEach((t,ti)=>{
-    html += `<div class="box">
+    html += `
+    <div class="box">
       <h3>${t.name}</h3>
       <button onclick="addRack(${ti})">+ เพิ่มแล็ค</button>
     `;
 
     t.racks.forEach((r,ri)=>{
-      html += `<div class="rack">
+      html += `
+      <div class="rack">
         <b>${r.name}</b>
         <button onclick="addBull(${ti},${ri})">+ เพิ่มพ่อพันธุ์</button>
       `;
@@ -61,6 +67,7 @@ function render(){
 
           <button class="plus" onclick="change(${ti},${ri},${bi},1)">+</button>
           <button class="minus" onclick="change(${ti},${ri},${bi},-1)">-</button>
+          <button class="del" onclick="deleteBull(${ti},${ri},${bi})">ลบ</button>
         </div>
         `;
       });
@@ -93,7 +100,7 @@ function addRack(ti){
   render();
 }
 
-// เพิ่มพ่อพันธุ์ (สำคัญที่สุด)
+// เพิ่มพ่อพันธุ์
 function addBull(ti,ri){
   let name = prompt("ชื่อพ่อพันธุ์:");
   if(!name) return;
@@ -109,11 +116,17 @@ function addBull(ti,ri){
   render();
 }
 
-// เพิ่ม/ลดหลอด
+// เพิ่ม / ลดหลอด
 function change(ti,ri,bi,val){
   let b = data.tanks[ti].racks[ri].bulls[bi];
   b.qty += val;
   if(b.qty < 0) b.qty = 0;
+  render();
+}
+
+// ลบพ่อพันธุ์
+function deleteBull(ti,ri,bi){
+  data.tanks[ti].racks[ri].bulls.splice(bi,1);
   render();
 }
 
