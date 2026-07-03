@@ -2,66 +2,72 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Cow Tank</title>
+<title>Cow Tank Pro</title>
 <style>
 body{font-family:Arial;padding:20px;background:#f4f6f8}
-.box{background:white;padding:15px;margin-bottom:15px;border-radius:10px}
+.card{background:white;padding:15px;margin-bottom:15px;border-radius:10px}
 button{padding:6px 10px;margin:3px;border:none;border-radius:6px;color:white}
 .plus{background:#2d7ff9}
 .minus{background:#e74c3c}
+input{padding:5px;margin:3px}
 </style>
 </head>
 
 <body>
 
-<h2>🐂 Cow Tank</h2>
+<h2>🐂 Cow Tank Pro</h2>
 
-<div class="box">
-<h3>LN2-01</h3>
+<button onclick="addTank()">+ เพิ่มถัง</button>
 
-<p>
-Delta Lambda 🔴 <br>
-<span id="a">18</span> หลอด
-</p>
-<button class="plus" onclick="add('a')">+</button>
-<button class="minus" onclick="minus('a')">-</button>
-</div>
-
-<div class="box">
-<h3>LN2-02</h3>
-
-<p>
-Chief 🔵 <br>
-<span id="b">12</span> หลอด
-</p>
-<button class="plus" onclick="add('b')">+</button>
-<button class="minus" onclick="minus('b')">-</button>
-</div>
-
-<div class="box">
-<h3>LN2-03</h3>
-
-<p>
-Dropbox 🟢 <br>
-<span id="c">6</span> หลอด
-</p>
-<button class="plus" onclick="add('c')">+</button>
-<button class="minus" onclick="minus('c')">-</button>
-</div>
+<div id="app"></div>
 
 <script>
-function add(id){
-  let el=document.getElementById(id);
-  el.innerText=parseInt(el.innerText)+1;
+
+let data = JSON.parse(localStorage.getItem("cowpro") || "[]");
+
+function render(){
+  let html = "";
+
+  data.forEach((t,i)=>{
+    html += `
+    <div class="card">
+      <input value="${t.name}" oninput="updateName(${i},this.value)" placeholder="ชื่อพ่อพันธุ์">
+
+      <p>หลอด: ${t.qty}</p>
+
+      <button class="plus" onclick="change(${i},1)">+</button>
+      <button class="minus" onclick="change(${i},-1)">-</button>
+      <button onclick="removeTank(${i})">ลบ</button>
+    </div>`;
+  });
+
+  document.getElementById("app").innerHTML = html;
+  localStorage.setItem("cowpro", JSON.stringify(data));
 }
 
-function minus(id){
-  let el=document.getElementById(id);
-  let v=parseInt(el.innerText);
-  if(v>0){
-    el.innerText=v-1;
-  }
+function addTank(){
+  data.push({name:"",qty:0});
+  render();
 }
+
+function change(i,v){
+  data[i].qty += v;
+  if(data[i].qty < 0) data[i].qty = 0;
+  render();
+}
+
+function updateName(i,val){
+  data[i].name = val;
+  render();
+}
+
+function removeTank(i){
+  data.splice(i,1);
+  render();
+}
+
+render();
+
 </script>
 
 </body>
